@@ -1,43 +1,27 @@
+
 import discord
+import json
 from discord.ext import commands
-from os import remove
-from time import sleep
+
+file = open("config.json", "r")
+config = json.load(file)
 
 intents = discord.Intents.default()
 intents.message_content = True
 
-bot = commands.Bot(command_prefix='$', intents=intents)
+bot = commands.Bot(config['prefix'], intents=intents)
 
 @bot.event
 async def on_ready():
-    print(f'We have logged in as {bot.user}')
+    print('bot online')
 
-@bot.command()
-async def hello(ctx):
-    await ctx.send(f'Hi! I am a bot {bot.user}!')
+@bot.command(name= 'world')
+async def ping(ctx):
+    await ctx.send(f'{ctx.massage.content} "ЗАГРЕЗНЕНИЕ ВОЗДУХА,ПРИРОДЫ,ВОДОЁМОВ"' )
 
-@bot.command()
-async def heh(ctx, count_heh = 5):
-    await ctx.send("he" * count_heh)
+    
+@bot.command(name='healing')
+async def ping(ctx: commands.context):
+    await ctx.send(embed=discord.Embed(title=f"{ctx.massage.content}"), color='#00FF00')
 
-@bot.command()
-async def photo(ctx):
-    if ctx.message.attachments:
-        for attachment in ctx.message.attachments:
-            file_name = attachment.filename # 'kodland.jpg'
-            if file_name.endswith('.jpg') or file_name.endswith('.jpeg') or file_name.endswith('.png'):
-                await attachment.save(f'./images/{file_name}')
-                ##
-                ##
-                sleep(5)
-                ##
-                ##
-                remove(f'./images/{file_name}')
-            else:
-                await ctx.send('Неправильный формат файлов! (мне нужны картинки)')
-                return
-    else:
-        await ctx.send('Кажется, ты забыл прикрепить фотографии ;c')
-
-
-bot.run("MTE0NDk2MDE5MzEzNDg2MjM1Ng.G0bYfD.WZpU7lapB_Ng0XDeiwyFMUTHx1c_Io152YW3ng")
+bot.run(config['token'])
